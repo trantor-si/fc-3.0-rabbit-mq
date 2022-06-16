@@ -12,8 +12,9 @@ import (
 )
 
 func main() {
+	log.Printf("Starting connection with server...")
 	publisher, err := rabbitmq.NewPublisher(
-		"amqp://guest:guest@localhost", rabbitmq.Config{},
+		"amqp://guest:guest@localhost:5672", rabbitmq.Config{},
 		rabbitmq.WithPublisherOptionsLogging,
 	)
 	if err != nil {
@@ -55,17 +56,18 @@ func main() {
 
 	fmt.Println("awaiting signal")
 
-	ticker := time.NewTicker(time.Second)
+	ticker := time.NewTicker(time.Microsecond)
 	for {
 		select {
 		case <-ticker.C:
 			err = publisher.Publish(
 				[]byte("hello, world"),
-				[]string{"routing_key"},
+				// []string{"routing_key"},
+				[]string{"monitoring-data"},
 				rabbitmq.WithPublishOptionsContentType("application/json"),
 				rabbitmq.WithPublishOptionsMandatory,
 				rabbitmq.WithPublishOptionsPersistentDelivery,
-				rabbitmq.WithPublishOptionsExchange("events"),
+				rabbitmq.WithPublishOptionsExchange("trantor-si-ex"),
 			)
 			if err != nil {
 				log.Println(err)

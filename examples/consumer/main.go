@@ -10,11 +10,11 @@ import (
 	rabbitmq "github.com/wagslane/go-rabbitmq"
 )
 
-var consumerName = "example"
+var consumerName = "trantor-si-data-consumer"
 
 func main() {
 	consumer, err := rabbitmq.NewConsumer(
-		"amqp://guest:guest@localhost", rabbitmq.Config{},
+		"amqp://guest:guest@localhost:5672", rabbitmq.Config{},
 		rabbitmq.WithConsumerOptionsLogging,
 	)
 	if err != nil {
@@ -33,14 +33,15 @@ func main() {
 			// rabbitmq.Ack, rabbitmq.NackDiscard, rabbitmq.NackRequeue
 			return rabbitmq.Ack
 		},
-		"my_queue",
-		[]string{"routing_key", "routing_key_2"},
-		rabbitmq.WithConsumeOptionsConcurrency(10),
+		"trantor-si-queue",
+		// []string{"monitoring-data", "routing_key_2"},
+		[]string{"monitoring-data"},
+		rabbitmq.WithConsumeOptionsConcurrency(100000),
 		rabbitmq.WithConsumeOptionsQueueDurable,
-		rabbitmq.WithConsumeOptionsQuorum,
-		rabbitmq.WithConsumeOptionsBindingExchangeName("events"),
-		rabbitmq.WithConsumeOptionsBindingExchangeKind("topic"),
-		rabbitmq.WithConsumeOptionsBindingExchangeDurable,
+		// rabbitmq.WithConsumeOptionsQuorum,
+		// rabbitmq.WithConsumeOptionsBindingExchangeName("events"),
+		// rabbitmq.WithConsumeOptionsBindingExchangeKind("topic"),
+		// rabbitmq.WithConsumeOptionsBindingExchangeDurable,
 		rabbitmq.WithConsumeOptionsConsumerName(consumerName),
 	)
 	if err != nil {
